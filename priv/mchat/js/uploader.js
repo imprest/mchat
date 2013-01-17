@@ -45,7 +45,7 @@ function sendSlice() {
     if ('mozSlice' in file) {
       chunk = file.mozSlice(start, end);
     } else {
-      chunk = file.webkitSlice(start, end);
+      chunk = file.slice(start, end);
     }
 
     ws.send(chunk);

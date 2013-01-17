@@ -48,9 +48,9 @@ function initFileSystem() {
 }
 
 function downloadSlice(data) {
-  var bb = new WebKitBlobBuilder();
-  bb.append(data);
-  fileWriter.write(bb.getBlob(file.type));
+  var dataView = new DataView(data);
+  var bb = new Blob([dataView], {type: file.type });
+  fileWriter.write(bb.slice(file.type));
   progress = (fileWriter.position/file.size) * 100;
   postMessage({status: 'progress', progress: progress});
   

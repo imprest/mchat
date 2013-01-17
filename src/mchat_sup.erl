@@ -24,34 +24,8 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-   Dispatch = [{'_', [{[<<"mchat-api">>], bullet_handler, 
-                        [{handler, mchat_ws_handler}]},
-                       {[<<"upload">>], bullet_handler, 
-                        [{handler, mchat_upload_handler}]},
-                       {[<<"download">>], bullet_handler, 
-                        [{handler, mchat_download_handler}]},
-                       {[], cowboy_http_static,
-                        [{directory, {priv_dir, ?MODULE, [<<"mchat">>]}},
-                         {file, <<"index.html">>},
-                         {mimetypes, [{<<".html">>, [<<"text/html">>]}]}]},
-                       {['...'], cowboy_http_static,
-                        [{directory, {priv_dir, ?MODULE, [<<"mchat">>]}},
-                         {mimetypes,
-                          [{<<".css">> , [<<"text/css">>]},
-                           {<<".png">> , [<<"image/png">>]},
-                           {<<".jpg">> , [<<"image/jpeg">>]},
-                           {<<".jpeg">>, [<<"image/jpeg">>]},
-                           {<<".js">>  , [<<"application/javascript">>]}]}]}
-                      ]}
-               ],
-    Port = mchat_utils:confval(mchat, port, 8080),
-    WSPool = mchat_utils:confval(mchat, ws_pool_size, 100),
-    CowboySpec = cowboy:child_spec(
-            my_http_listener, WSPool,
-            cowboy_tcp_transport, [{port, Port}],
-            cowboy_http_protocol, [{dispatch, Dispatch}]),
     WSServerSpec = ?CHILD(mchat_server, worker),
-    ChildSpecs = [CowboySpec, WSServerSpec],
+    ChildSpecs = [WSServerSpec],
     RestartStrategy = {one_for_all, 3, 30},
     {ok, {RestartStrategy, ChildSpecs}}.
 
